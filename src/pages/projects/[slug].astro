@@ -1,0 +1,67 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => data.published);
+  return projects.map((p) => ({
+    params: { slug: p.id },
+    props: { slug: p.id },
+  }));
+}
+
+const { slug } = Astro.props;
+const project = await getEntry('projects', slug);
+if (!project) throw new Error(`Missing project: ${slug}`);
+const p = project.data;
+
+const settingsEntry = await getEntry('settings', 'settings');
+const s = settingsEntry!.data;
+
+const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
+---
+
+<Layout title={`${p.title} — ${s.brandName}`} description={p.result}>
+  <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+      <a href="/#projects" class="text-sm text-neutral-400 hover:text-white">← Back to projects</a>
+      <a href="/" class="text-sm font-semibold">{s.brandInitials}</a>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-4xl px-6 py-16">
+    <div class="text-xs uppercase tracking-wide text-amber-400">Sheet {p.sheet} · {p.tag}</div>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">{p.title}</h1>
+    <p class="mt-2 text-lg text-neutral-400">{p.subtitle}</p>
+
+    {p.thumb && (
+      <img src={p.thumb} alt={p.title} class="mt-8 aspect-video w-full rounded-2xl border border-white/10 object-cover" />
+    )}
+
+    {detailMetrics.length > 0 && (
+      <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {detailMetrics.map((m) => (
+          <div class="rounded-xl border border-white/10 bg-neutral-900/40 p-4">
+            <div class="text-lg font-bold">{m.value}</div>
+            <div class="text-xs text-neutral-500">{m.label}</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="mt-12 space-y-12">
+      {p.sections.map((section) => (
+        <div>
+          <div class="flex items-baseline gap-3 border-b border-white/10 pb-2">
+            <span class="text-sm font-mono text-neutral-600">{section.number}</span>
+            <h2 class="text-xl font-semibold">{section.heading}</h2>
+          </div>
+          <div
+            class="prose prose-invert mt-4 max-w-none prose-p:text-neutral-300 prose-li:text-neutral-300 prose-table:text-sm prose-th:text-neutral-400"
+            set:html={section.body}
+          />
+        </div>
+      ))}
+    </div>
+  </main>
+</Layout>

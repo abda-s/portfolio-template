@@ -30,8 +30,14 @@ to find it:
   `public/admin/config.yml`, add the matching field to that singleton's
   schema here too (and vice versa) — they must stay in sync.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro` — render the
-  content. Styling is plain Tailwind; restyle freely per client, the content
-  model underneath doesn't need to change.
+  content.
+- `src/styles/global.css` — the whole design system, ported from
+  raad04.github.io: a CAD title-block aesthetic (ink/paper theme, Big
+  Shoulders Display + IBM Plex type, dimension-line callouts). Hand-authored
+  CSS classes (`.hero`, `.proj-card`, `.skill-grid`, etc.), not Tailwind
+  utilities — restyle freely per client by editing this file and the markup
+  in the two pages above; the content model underneath doesn't need to
+  change.
 
 Adding a whole new page section later (say, a Testimonials block) means:
 add one JSON file under `src/content/settings/`, one singleton block in

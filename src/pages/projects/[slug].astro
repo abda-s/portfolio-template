@@ -17,51 +17,80 @@ if (!project) throw new Error(`Missing project: ${slug}`);
 const p = project.data;
 
 const site = (await getEntry('site', 'site'))!.data;
+const contact = (await getEntry('contact', 'contact'))!.data;
+
+const allProjects = (await getCollection('projects', ({ data }) => data.published)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const idx = allProjects.findIndex((proj) => proj.id === slug);
+const next = allProjects[(idx + 1) % allProjects.length]!;
 
 const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
 ---
 
 <Layout title={`${p.title} — ${site.brandName}`} description={p.result}>
-  <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
-    <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-      <a href={withBase('#projects')} class="text-sm text-neutral-400 hover:text-white">← Back to projects</a>
-      <a href={withBase('')} class="text-sm font-semibold">{site.brandInitials}</a>
-    </div>
-  </nav>
-
-  <main class="mx-auto max-w-4xl px-6 py-16">
-    <div class="text-xs uppercase tracking-wide text-amber-400">Sheet {p.sheet} · {p.tag}</div>
-    <h1 class="mt-2 text-4xl font-bold tracking-tight">{p.title}</h1>
-    <p class="mt-2 text-lg text-neutral-400">{p.subtitle}</p>
-
-    {p.thumb && (
-      <img src={withBase(p.thumb)} alt={p.title} class="mt-8 aspect-video w-full rounded-2xl border border-white/10 object-cover" />
-    )}
-
-    {detailMetrics.length > 0 && (
-      <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {detailMetrics.map((m) => (
-          <div class="rounded-xl border border-white/10 bg-neutral-900/40 p-4">
-            <div class="text-lg font-bold">{m.value}</div>
-            <div class="text-xs text-neutral-500">{m.label}</div>
-          </div>
-        ))}
-      </div>
-    )}
-
-    <div class="mt-12 space-y-12">
-      {p.sections.map((section) => (
-        <div>
-          <div class="flex items-baseline gap-3 border-b border-white/10 pb-2">
-            <span class="text-sm font-mono text-neutral-600">{section.number}</span>
-            <h2 class="text-xl font-semibold">{section.heading}</h2>
-          </div>
-          <div
-            class="prose prose-invert mt-4 max-w-none prose-p:text-neutral-300 prose-li:text-neutral-300 prose-table:text-sm prose-th:text-neutral-400"
-            set:html={section.body}
-          />
+  <div class="site">
+    <nav id="nav">
+      <div class="wrap">
+        <a href={withBase('')} class="brand">
+          <span class="mark"><span>{site.brandInitials}</span></span>
+          {site.brandName}
+        </a>
+        <div class="navlinks">
+          <a href={withBase('#home')}>Home</a>
+          <a href={withBase('#about')}>About</a>
+          <a href={withBase('#skills')}>Skills</a>
+          <a href={withBase('#projects')}>Projects</a>
+          <a href={withBase('#contact')}>Contact</a>
+          {contact.cvUrl ? (
+            <a class="cv-btn" href={contact.cvUrl} target="_blank" rel="noreferrer">Get CV</a>
+          ) : (
+            <a class="cv-btn" href={withBase('#contact')}>Get CV</a>
+          )}
         </div>
-      ))}
+      </div>
+    </nav>
+
+    <div id="project-detail" class="show">
+      <div class="pd-header">
+        <div class="wrap inner">
+          <a href={withBase('#projects')} class="back-btn">← All projects</a>
+          <div class="eyebrow">Sheet {p.sheet} — {p.tag}</div>
+          <h1>{p.title}</h1>
+          <p class="tagline">{p.subtitle}</p>
+          {detailMetrics.length > 0 && (
+            <div class="pd-metrics">
+              {detailMetrics.map((m) => (
+                <div>
+                  <b>{m.value}</b>
+                  <span>{m.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div class="pd-body on-paper">
+        <div class="wrap">
+          {p.sections.map((section) => (
+            <div class="pd-section">
+              <div class="pd-num">
+                <span class="n">{section.number}</span>
+                <h4 set:html={section.heading} />
+              </div>
+              <div class="pd-content">
+                <div set:html={section.body} />
+              </div>
+            </div>
+          ))}
+
+          <div class="pd-nav-projects">
+            <a href={withBase('#projects')}>← All projects</a>
+            <a href={withBase(`projects/${next.id}/`)}>Next: {next.data.title} →</a>
+          </div>
+        </div>
+      </div>
     </div>
-  </main>
+  </div>
 </Layout>

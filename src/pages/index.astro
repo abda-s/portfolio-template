@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry, render } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { withBase } from '../lib/media';
 
@@ -13,196 +13,246 @@ const contact = (await getEntry('contact', 'contact'))!.data;
 const allProjects = await getCollection('projects', ({ data }) => data.published);
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
 
-const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
+const cardMetrics = (metrics: (typeof projects)[number]['data']['metrics']) =>
   metrics.filter((m) => m.placement === 'card');
+
+const splitLines = (text: string) => text.split('\n');
 ---
 
 <Layout title={site.metaTitle} description={site.metaDescription}>
-  <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-      <a href="#home" class="text-sm font-semibold tracking-wide">
-        {site.brandInitials} <span class="text-neutral-400">/ {site.brandName}</span>
-      </a>
-      <div class="hidden gap-6 text-sm text-neutral-300 sm:flex">
-        <a href="#about" class="hover:text-white">About</a>
-        <a href="#skills" class="hover:text-white">Skills</a>
-        <a href="#projects" class="hover:text-white">Projects</a>
-        <a href="#contact" class="hover:text-white">Contact</a>
-        {contact.cvUrl && (
-          <a href={contact.cvUrl} target="_blank" rel="noreferrer" class="text-white">CV →</a>
-        )}
+  <div class="site">
+    <nav id="nav">
+      <div class="wrap">
+        <a href={withBase('#home')} class="brand">
+          <span class="mark"><span>{site.brandInitials}</span></span>
+          {site.brandName}
+        </a>
+        <div class="navlinks">
+          <a href={withBase('#home')}>Home</a>
+          <a href={withBase('#about')}>About</a>
+          <a href={withBase('#skills')}>Skills</a>
+          <a href={withBase('#projects')}>Projects</a>
+          <a href={withBase('#contact')}>Contact</a>
+          {contact.cvUrl ? (
+            <a class="cv-btn" href={contact.cvUrl} target="_blank" rel="noreferrer">Get CV</a>
+          ) : (
+            <a class="cv-btn" href={withBase('#contact')}>Get CV</a>
+          )}
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main>
-    <section id="home" class="mx-auto max-w-6xl px-6 pt-20 pb-24">
-      <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
-        <div>
-          <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{hero.eyebrow}</p>
-          <h1 class="mt-4 text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            {hero.titleLine1}<br />
-            {hero.titleLine2}<em class="text-amber-400 not-italic">{hero.titleAccent}</em>
-          </h1>
-          <p class="mt-6 max-w-xl text-lg text-neutral-300">{hero.lede}</p>
-          <div class="mt-8 flex flex-wrap gap-4">
-            <a
-              href="#projects"
-              class="rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-300"
-            >
-              {hero.ctaPrimary}
-            </a>
-            <a
-              href={contact.cvUrl || '#contact'}
-              class="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold hover:border-white/40"
-            >
-              {hero.ctaSecondary}
-            </a>
-          </div>
-          <div class="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
-            {hero.stats.map((st) => (
-              <div>
-                <div class="text-2xl font-bold">{st.value}</div>
-                <div class="mt-1 text-xs text-neutral-400">{st.label}</div>
+    <main>
+      <section id="home">
+        <div class="hero">
+          <div class="wrap hero-grid">
+            <div class="hero-copy">
+              <div class="eyebrow">{hero.eyebrow}</div>
+              <h1>
+                {hero.titleLine1}<br />
+                {hero.titleLine2}<em>{hero.titleAccent}</em>
+              </h1>
+              <p class="lede">{hero.lede}</p>
+              <div class="hero-cta">
+                <a class="btn primary" href={withBase('#projects')}>{hero.ctaPrimary}</a>
+                <a class="btn" href={contact.cvUrl || withBase('#contact')} target={contact.cvUrl ? '_blank' : undefined} rel={contact.cvUrl ? 'noreferrer' : undefined}>
+                  {hero.ctaSecondary}
+                </a>
               </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div class="aspect-[4/5] rounded-2xl border border-white/10 bg-neutral-900">
-            {hero.image && <img src={withBase(hero.image)} alt={hero.imageAlt} class="h-full w-full rounded-2xl object-cover" />}
-          </div>
-          <div class="mt-3 flex justify-between text-xs text-neutral-500">
-            <span>{hero.caption}</span>
-            <span>{hero.captionRight}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="border-t border-white/10 bg-neutral-900/40 py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{about.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{about.title}</h2>
-        <div class="mt-10 grid gap-12 lg:grid-cols-[2fr_1fr]">
-          <div class="prose prose-invert max-w-none prose-p:text-neutral-300" set:html={about.body} />
-          <div class="rounded-2xl border border-white/10 bg-neutral-950 p-6">
-            <div class="flex items-center justify-between text-xs uppercase tracking-wide text-neutral-500">
-              <span>{about.cardTitle}</span>
-              <span>{about.cardRev}</span>
+              <div class="stat-strip">
+                {hero.stats.map((st) => (
+                  <div>
+                    <b>{st.value}</b>
+                    <span>{st.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div class="mt-4 divide-y divide-white/10">
+            <div class="hero-visual">
+              <div class="frame">
+                {hero.image && <img src={withBase(hero.image)} alt={hero.imageAlt} />}
+              </div>
+              <div class="cap">
+                <span>{hero.caption}</span>
+                <span>{hero.captionRight}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="on-paper">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="eyebrow">{about.eyebrow}</div>
+            <h2>
+              {splitLines(about.title).map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line}
+                </>
+              ))}
+            </h2>
+          </div>
+          <div class="about-grid">
+            <div class="reveal" set:html={about.body} />
+            <div class="spec-card reveal">
+              <div class="head">
+                <span>{about.cardTitle}</span>
+                <span>{about.cardRev}</span>
+              </div>
               {about.specs.map((sp) => (
-                <div class="flex justify-between py-2 text-sm">
-                  <span class="text-neutral-400">{sp.key}</span>
-                  <span class="text-right font-medium">{sp.value}</span>
+                <div class="spec-row">
+                  <span class="k">{sp.key}</span>
+                  <span class="v">{sp.value}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="skills" class="border-t border-white/10 py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{skills.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{skills.title}</h2>
-        <p class="mt-4 max-w-2xl text-neutral-400">{skills.intro}</p>
-        <div class="mt-12 grid gap-6 sm:grid-cols-2">
-          {skills.categories.map((c) => (
-            <div class="rounded-2xl border border-white/10 bg-neutral-900/40 p-6">
-              <h3 class="font-semibold">{c.title}</h3>
-              <p class="text-xs text-neutral-500">{c.subtitle}</p>
-              <div class="mt-5 space-y-4">
-                {c.items.map((sk) => (
-                  <div>
-                    <div class="flex justify-between text-sm">
-                      <span>{sk.name}</span>
-                      <span class="text-neutral-400">{sk.level}</span>
-                    </div>
-                    <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <div class="h-full rounded-full bg-amber-400" style={`width: ${sk.pct}%`} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section id="projects" class="border-t border-white/10 bg-neutral-900/40 py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{projectsSection.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{projectsSection.title}</h2>
-        <p class="mt-4 max-w-2xl text-neutral-400">{projectsSection.intro}</p>
-        <div class="mt-12 grid gap-6 sm:grid-cols-2">
-          {projects.map((p) => (
-            <a href={withBase(`projects/${p.id}/`)} class="group rounded-2xl border border-white/10 bg-neutral-950 p-6 transition hover:border-amber-400/50">
-              <div class="aspect-video rounded-xl border border-white/10 bg-neutral-900">
-                {p.data.thumb && <img src={withBase(p.data.thumb)} alt={p.data.title} class="h-full w-full rounded-xl object-cover" />}
-              </div>
-              <div class="mt-4 text-xs uppercase tracking-wide text-amber-400">{p.data.tag}</div>
-              <h3 class="mt-1 text-xl font-semibold">{p.data.title}</h3>
-              <p class="mt-2 text-sm text-neutral-400">{p.data.result}</p>
-              <div class="mt-4 flex gap-6">
-                {cardMetrics(p.data.metrics).map((m) => (
-                  <div>
-                    <div class="text-sm font-bold">{m.value}</div>
-                    <div class="text-xs text-neutral-500">{m.label}</div>
-                  </div>
-                ))}
-              </div>
-              <span class="mt-4 inline-block text-sm text-neutral-500 group-hover:text-amber-400">
-                Open sheet {p.data.sheet} →
-              </span>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="border-t border-white/10 py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="grid gap-12 lg:grid-cols-2">
-          <div>
-            <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{contact.eyebrow}</p>
-            <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{contact.title}</h2>
-            <p class="mt-4 max-w-md text-neutral-400">{contact.lede}</p>
+      <section id="skills" class="on-ink">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="eyebrow">{skills.eyebrow}</div>
+            <h2 style="color:var(--text-ink)">
+              {splitLines(skills.title).map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line}
+                </>
+              ))}
+            </h2>
+            <p class="text-paper-dim" style="max-width:60ch; margin-top:14px; font-size:15px">{skills.intro}</p>
           </div>
-          <div class="space-y-3">
-            {contact.email && (
-              <a href={`mailto:${contact.email}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
-                <span class="text-neutral-400">Email</span>
-                <span>{contact.email}</span>
-              </a>
-            )}
-            {contact.phone && (
-              <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
-                <span class="text-neutral-400">Phone</span>
-                <span>{contact.phone}</span>
-              </a>
-            )}
-            {contact.socials.map((l) => (
-              <a
-                href={l.url || '#'}
-                target={l.url ? '_blank' : undefined}
-                rel={l.url ? 'noreferrer' : undefined}
-                class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50"
-              >
-                <span class="text-neutral-400">{l.label}</span>
-                <span>{l.value}</span>
+          <div class="skill-grid">
+            {skills.categories.map((c) => (
+              <div class="skill-card rated reveal">
+                <h3>{c.title}</h3>
+                <span class="sub">{c.subtitle}</span>
+                {c.items.map((sk) => (
+                  <div class="skill-item">
+                    <div class="row">
+                      <span class="name">{sk.name}</span>
+                      <span class="level">{sk.level}</span>
+                    </div>
+                    <div class="bar">
+                      <i style={`--pct: ${sk.pct}%`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="on-paper">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="eyebrow">{projectsSection.eyebrow}</div>
+            <h2>
+              {splitLines(projectsSection.title).map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line}
+                </>
+              ))}
+            </h2>
+            <p style="max-width:60ch; margin-top:14px; font-size:15px; color:var(--text-paper-dim)">{projectsSection.intro}</p>
+          </div>
+          <div class="proj-grid">
+            {projects.map((p) => (
+              <a href={withBase(`projects/${p.id}/`)} class="proj-card reveal">
+                <div class="thumb">
+                  {p.data.thumb && <img src={withBase(p.data.thumb)} alt={p.data.title} />}
+                  <span class="tag">{p.data.tag}</span>
+                </div>
+                <div class="body">
+                  <h3>{p.data.title}</h3>
+                  <div class="result">{p.data.result}</div>
+                  <div class="metrics">
+                    {cardMetrics(p.data.metrics).map((m) => (
+                      <div>
+                        <b>{m.value}</b>
+                        <span>{m.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <span class="open">Open sheet {p.data.sheet} →</span>
               </a>
             ))}
           </div>
         </div>
-      </div>
-      <footer class="mx-auto mt-16 flex max-w-6xl justify-between border-t border-white/10 px-6 pt-8 text-xs text-neutral-500">
-        <span>{site.footerLeft}</span>
-        <span>{site.footerRight}</span>
-      </footer>
-    </section>
-  </main>
+      </section>
+
+      <section id="contact">
+        <div class="wrap">
+          <div class="contact-grid">
+            <div class="reveal">
+              <div class="eyebrow">{contact.eyebrow}</div>
+              <h2>
+                {splitLines(contact.title).map((line, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {line}
+                  </>
+                ))}
+              </h2>
+              <p class="lede">{contact.lede}</p>
+            </div>
+            <div class="contact-links reveal">
+              {contact.email && (
+                <a href={`mailto:${contact.email}`}>
+                  <span>Email</span>
+                  <span>{contact.email}</span>
+                </a>
+              )}
+              {contact.phone && (
+                <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>
+                  <span>Phone</span>
+                  <span>{contact.phone}</span>
+                </a>
+              )}
+              {contact.socials.map((l) => (
+                <a href={l.url || '#'} target={l.url ? '_blank' : undefined} rel={l.url ? 'noreferrer' : undefined}>
+                  <span>{l.label}</span>
+                  <span>{l.value}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        <footer>
+          <div class="wrap">
+            <span>{site.footerLeft}</span>
+            <span>{site.footerRight}</span>
+          </div>
+        </footer>
+      </section>
+    </main>
+  </div>
 </Layout>
+
+<script>
+  const els = Array.from(document.querySelectorAll('.reveal'));
+
+  if (!('IntersectionObserver' in window)) {
+    els.forEach((e) => e.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+    els.forEach((e) => io.observe(e));
+  }
+</script>

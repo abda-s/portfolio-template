@@ -3,6 +3,7 @@ sheet: '04'
 tag: Fluid Mechanics · Energy
 title: Pelton Turbine
 subtitle: Hydro-electric generation rig
+thumb: /images/uploads/1785749218608-1ry1rb.png
 result: Built and instrumented a small-scale Pelton turbine generator, quantifying real conversion efficiency against calculated hydraulic power input.
 published: true
 order: 4

@@ -16,17 +16,16 @@ const project = await getEntry('projects', slug);
 if (!project) throw new Error(`Missing project: ${slug}`);
 const p = project.data;
 
-const settingsEntry = await getEntry('settings', 'settings');
-const s = settingsEntry!.data;
+const site = (await getEntry('site', 'site'))!.data;
 
 const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
 ---
 
-<Layout title={`${p.title} — ${s.brandName}`} description={p.result}>
+<Layout title={`${p.title} — ${site.brandName}`} description={p.result}>
   <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
     <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
       <a href={withBase('#projects')} class="text-sm text-neutral-400 hover:text-white">← Back to projects</a>
-      <a href={withBase('')} class="text-sm font-semibold">{s.brandInitials}</a>
+      <a href={withBase('')} class="text-sm font-semibold">{site.brandInitials}</a>
     </div>
   </nav>
 

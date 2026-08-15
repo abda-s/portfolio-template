@@ -1,0 +1,15 @@
+{
+  "eyebrow": "01 — About",
+  "title": "Design engineer\nin training.",
+  "body": "<p>I'm a Mechanical Engineering student at <b>Al Hussein Technical University (HTU)</b>, focused on the intersection of mechanical design and mechatronic systems — where CAD geometry, structural analysis, and manufacturing constraints have to resolve into something that actually works.</p>\n<p>One of my recent team projects, <b>Velvet Vend</b>, pushed me through a full development cycle: SolidWorks modeling, DFM-driven tolerancing for laser-cut and FDM parts, supporting electrical integration, and diagnosing a real hardware failure under time pressure — a control board damaged by a power-supply transient, resolved by migrating the architecture rather than swapping parts.</p>\n<p>My project range also covers <b>structural FEA validated against analytical models</b> — cross-checking a simulated elastic modulus against the closed-form relation E = 2G(1+ν) — <b>CFD-informed load cases</b> for aerospace structures, and <b>experimental energy-system testing</b>, where I measured a 25.6% conversion efficiency on a self-built Pelton turbine generator against calculated hydraulic power input.</p>\n<p>I'm focused on <b>mechanical design, product development, and advanced manufacturing</b> — building toward a design engineering career grounded in the same design–analyze–build–validate loop across every project I take on.</p>",
+  "cardTitle": "Profile",
+  "cardRev": "Rev. 2026",
+  "specs": [
+    { "key": "Institution", "value": "Al Hussein Technical University" },
+    { "key": "Program", "value": "Mechanical Engineering" },
+    { "key": "Focus", "value": "Design · Simulation · Mfg." },
+    { "key": "Location", "value": "Amman, Jordan" },
+    { "key": "CAD platform", "value": "SolidWorks" },
+    { "key": "Fabrication", "value": "FDM · Laser cutting" }
+  ]
+}

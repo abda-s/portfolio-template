@@ -10,17 +10,36 @@ This is the base template. **Each client gets their own copy of this repo**
 
 ## How content is wired up
 
-- `src/content/settings.json` — the site-wide singleton: hero, about, skills,
-  contact, social links, footer. Edited via the "Site Settings" collection
-  in `/admin`.
-- `src/content/projects/*.md` — one file per project. Edited via the
-  "Projects" collection in `/admin`.
+Each page section is its own file, edited on its own dedicated screen in
+`/admin` — not one long form covering the whole site. The sidebar shows Site
+Info, Hero, About, Skills, Projects Intro, and Contact & Socials as separate
+clicks (via Sveltia's `singletons` config), so "update my phone number"
+opens a small Contact screen instead of scrolling through everything else
+to find it:
+
+- `src/content/settings/site.json` — brand name, page title/description, footer.
+- `src/content/settings/hero.json` — homepage intro, headline, stats strip.
+- `src/content/settings/about.json` — About section text and the side-card facts.
+- `src/content/settings/skills.json` — skill categories and their bars.
+- `src/content/settings/projects-section.json` — the heading/intro above the project grid.
+- `src/content/settings/contact.json` — contact info and social/link rows.
+- `src/content/projects/*.md` — one file per project, in its own "Projects"
+  collection (create/delete supported, unlike the singletons above).
 - `src/content.config.ts` — the schema both the Astro pages and the CMS
-  fields are validated against. If you add a field in `public/admin/config.yml`,
-  add the matching field here too (and vice versa) — they must stay in sync.
+  fields are validated against. If you add a field to a singleton in
+  `public/admin/config.yml`, add the matching field to that singleton's
+  schema here too (and vice versa) — they must stay in sync.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro` — render the
   content. Styling is plain Tailwind; restyle freely per client, the content
   model underneath doesn't need to change.
+
+Adding a whole new page section later (say, a Testimonials block) means:
+add one JSON file under `src/content/settings/`, one singleton block in
+`config.yml`, one schema entry in `content.config.ts`, and the markup in
+`index.astro` — each addition mirrors the existing ones, so copy whichever
+section is most similar (e.g. `projects-section.json` for something with no
+list, `skills.json` for something with a repeatable list) as a starting
+point.
 
 ## One-time setup per new client site
 

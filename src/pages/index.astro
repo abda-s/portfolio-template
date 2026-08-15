@@ -3,9 +3,12 @@ import { getCollection, getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { withBase } from '../lib/media';
 
-const settingsEntry = await getEntry('settings', 'settings');
-if (!settingsEntry) throw new Error('Missing src/content/settings.json');
-const s = settingsEntry.data;
+const site = (await getEntry('site', 'site'))!.data;
+const hero = (await getEntry('hero', 'hero'))!.data;
+const about = (await getEntry('about', 'about'))!.data;
+const skills = (await getEntry('skills', 'skills'))!.data;
+const projectsSection = (await getEntry('projectsSection', 'projectsSection'))!.data;
+const contact = (await getEntry('contact', 'contact'))!.data;
 
 const allProjects = await getCollection('projects', ({ data }) => data.published);
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
@@ -14,19 +17,19 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
   metrics.filter((m) => m.placement === 'card');
 ---
 
-<Layout title={s.metaTitle} description={s.metaDescription}>
+<Layout title={site.metaTitle} description={site.metaDescription}>
   <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
       <a href="#home" class="text-sm font-semibold tracking-wide">
-        {s.brandInitials} <span class="text-neutral-400">/ {s.brandName}</span>
+        {site.brandInitials} <span class="text-neutral-400">/ {site.brandName}</span>
       </a>
       <div class="hidden gap-6 text-sm text-neutral-300 sm:flex">
         <a href="#about" class="hover:text-white">About</a>
         <a href="#skills" class="hover:text-white">Skills</a>
         <a href="#projects" class="hover:text-white">Projects</a>
         <a href="#contact" class="hover:text-white">Contact</a>
-        {s.contact.cvUrl && (
-          <a href={s.contact.cvUrl} target="_blank" rel="noreferrer" class="text-white">CV →</a>
+        {contact.cvUrl && (
+          <a href={contact.cvUrl} target="_blank" rel="noreferrer" class="text-white">CV →</a>
         )}
       </div>
     </div>
@@ -36,28 +39,28 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
     <section id="home" class="mx-auto max-w-6xl px-6 pt-20 pb-24">
       <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
-          <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{s.hero.eyebrow}</p>
+          <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{hero.eyebrow}</p>
           <h1 class="mt-4 text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            {s.hero.titleLine1}<br />
-            {s.hero.titleLine2}<em class="text-amber-400 not-italic">{s.hero.titleAccent}</em>
+            {hero.titleLine1}<br />
+            {hero.titleLine2}<em class="text-amber-400 not-italic">{hero.titleAccent}</em>
           </h1>
-          <p class="mt-6 max-w-xl text-lg text-neutral-300">{s.hero.lede}</p>
+          <p class="mt-6 max-w-xl text-lg text-neutral-300">{hero.lede}</p>
           <div class="mt-8 flex flex-wrap gap-4">
             <a
               href="#projects"
               class="rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-neutral-950 hover:bg-amber-300"
             >
-              {s.hero.ctaPrimary}
+              {hero.ctaPrimary}
             </a>
             <a
-              href={s.hero.cvUrl || s.contact.cvUrl || '#contact'}
+              href={contact.cvUrl || '#contact'}
               class="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold hover:border-white/40"
             >
-              {s.hero.ctaSecondary}
+              {hero.ctaSecondary}
             </a>
           </div>
           <div class="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
-            {s.hero.stats.map((st) => (
+            {hero.stats.map((st) => (
               <div>
                 <div class="text-2xl font-bold">{st.value}</div>
                 <div class="mt-1 text-xs text-neutral-400">{st.label}</div>
@@ -67,11 +70,11 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
         </div>
         <div>
           <div class="aspect-[4/5] rounded-2xl border border-white/10 bg-neutral-900">
-            {s.hero.image && <img src={withBase(s.hero.image)} alt={s.hero.imageAlt} class="h-full w-full rounded-2xl object-cover" />}
+            {hero.image && <img src={withBase(hero.image)} alt={hero.imageAlt} class="h-full w-full rounded-2xl object-cover" />}
           </div>
           <div class="mt-3 flex justify-between text-xs text-neutral-500">
-            <span>{s.hero.caption}</span>
-            <span>{s.hero.captionRight}</span>
+            <span>{hero.caption}</span>
+            <span>{hero.captionRight}</span>
           </div>
         </div>
       </div>
@@ -79,17 +82,17 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
 
     <section id="about" class="border-t border-white/10 bg-neutral-900/40 py-24">
       <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{s.about.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{s.about.title}</h2>
+        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{about.eyebrow}</p>
+        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{about.title}</h2>
         <div class="mt-10 grid gap-12 lg:grid-cols-[2fr_1fr]">
-          <div class="prose prose-invert max-w-none prose-p:text-neutral-300" set:html={s.about.body} />
+          <div class="prose prose-invert max-w-none prose-p:text-neutral-300" set:html={about.body} />
           <div class="rounded-2xl border border-white/10 bg-neutral-950 p-6">
             <div class="flex items-center justify-between text-xs uppercase tracking-wide text-neutral-500">
-              <span>{s.about.cardTitle}</span>
-              <span>{s.about.cardRev}</span>
+              <span>{about.cardTitle}</span>
+              <span>{about.cardRev}</span>
             </div>
             <div class="mt-4 divide-y divide-white/10">
-              {s.about.specs.map((sp) => (
+              {about.specs.map((sp) => (
                 <div class="flex justify-between py-2 text-sm">
                   <span class="text-neutral-400">{sp.key}</span>
                   <span class="text-right font-medium">{sp.value}</span>
@@ -103,11 +106,11 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
 
     <section id="skills" class="border-t border-white/10 py-24">
       <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{s.skills.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{s.skills.title}</h2>
-        <p class="mt-4 max-w-2xl text-neutral-400">{s.skills.intro}</p>
+        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{skills.eyebrow}</p>
+        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{skills.title}</h2>
+        <p class="mt-4 max-w-2xl text-neutral-400">{skills.intro}</p>
         <div class="mt-12 grid gap-6 sm:grid-cols-2">
-          {s.skills.categories.map((c) => (
+          {skills.categories.map((c) => (
             <div class="rounded-2xl border border-white/10 bg-neutral-900/40 p-6">
               <h3 class="font-semibold">{c.title}</h3>
               <p class="text-xs text-neutral-500">{c.subtitle}</p>
@@ -132,9 +135,9 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
 
     <section id="projects" class="border-t border-white/10 bg-neutral-900/40 py-24">
       <div class="mx-auto max-w-6xl px-6">
-        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{s.projectsSection.eyebrow}</p>
-        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{s.projectsSection.title}</h2>
-        <p class="mt-4 max-w-2xl text-neutral-400">{s.projectsSection.intro}</p>
+        <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{projectsSection.eyebrow}</p>
+        <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{projectsSection.title}</h2>
+        <p class="mt-4 max-w-2xl text-neutral-400">{projectsSection.intro}</p>
         <div class="mt-12 grid gap-6 sm:grid-cols-2">
           {projects.map((p) => (
             <a href={withBase(`projects/${p.id}/`)} class="group rounded-2xl border border-white/10 bg-neutral-950 p-6 transition hover:border-amber-400/50">
@@ -165,24 +168,24 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
       <div class="mx-auto max-w-6xl px-6">
         <div class="grid gap-12 lg:grid-cols-2">
           <div>
-            <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{s.contact.eyebrow}</p>
-            <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{s.contact.title}</h2>
-            <p class="mt-4 max-w-md text-neutral-400">{s.contact.lede}</p>
+            <p class="text-sm font-medium uppercase tracking-widest text-amber-400">{contact.eyebrow}</p>
+            <h2 class="mt-3 whitespace-pre-line text-4xl font-bold tracking-tight">{contact.title}</h2>
+            <p class="mt-4 max-w-md text-neutral-400">{contact.lede}</p>
           </div>
           <div class="space-y-3">
-            {s.contact.email && (
-              <a href={`mailto:${s.contact.email}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
+            {contact.email && (
+              <a href={`mailto:${contact.email}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
                 <span class="text-neutral-400">Email</span>
-                <span>{s.contact.email}</span>
+                <span>{contact.email}</span>
               </a>
             )}
-            {s.contact.phone && (
-              <a href={`tel:${s.contact.phone.replace(/\s+/g, '')}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
+            {contact.phone && (
+              <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} class="flex justify-between rounded-xl border border-white/10 px-5 py-4 hover:border-amber-400/50">
                 <span class="text-neutral-400">Phone</span>
-                <span>{s.contact.phone}</span>
+                <span>{contact.phone}</span>
               </a>
             )}
-            {s.socials.map((l) => (
+            {contact.socials.map((l) => (
               <a
                 href={l.url || '#'}
                 target={l.url ? '_blank' : undefined}
@@ -197,8 +200,8 @@ const cardMetrics = (metrics: typeof projects[number]['data']['metrics']) =>
         </div>
       </div>
       <footer class="mx-auto mt-16 flex max-w-6xl justify-between border-t border-white/10 px-6 pt-8 text-xs text-neutral-500">
-        <span>{s.footer.left}</span>
-        <span>{s.footer.right}</span>
+        <span>{site.footerLeft}</span>
+        <span>{site.footerRight}</span>
       </footer>
     </section>
   </main>

@@ -1,0 +1,13 @@
+{
+  "eyebrow": "04 — Contact",
+  "title": "Let's build\nsomething that works.",
+  "lede": "Always glad to talk mechanical design, product development, and advanced manufacturing — reach out if you'd like to see project files, drawings, or the full engineering write-ups.",
+  "email": "",
+  "phone": "",
+  "cvUrl": "",
+  "socials": [
+    { "label": "Email", "value": "hello@raadalshawabkeh.dev", "url": "mailto:hello@raadalshawabkeh.dev" },
+    { "label": "LinkedIn", "value": "/in/raad-alshawabkeh", "url": "https://www.linkedin.com/in/raad-alshawabkeh" },
+    { "label": "GitHub / CAD Repository", "value": "project files & drawings", "url": "" }
+  ]
+}

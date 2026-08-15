@@ -1,71 +1,99 @@
 import { defineCollection, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 
-const settings = defineCollection({
-  // The JSON file on disk holds the fields at its root (that's what Sveltia
-  // CMS writes for a file collection). The parser wraps it into a single
-  // { settings: {...} } entry so file() has an id to key the entry by.
-  loader: file('src/content/settings.json', {
-    parser: (text) => ({ settings: JSON.parse(text) }),
-  }),
+/**
+ * Each settings file below is a single-entry Astro collection loaded from
+ * its own JSON file, matching one Sveltia CMS "singleton" (see
+ * public/admin/config.yml). Splitting the old single settings.json into
+ * one focused file per page section means editing, say, just the contact
+ * info touches one small file/CMS screen instead of one giant one covering
+ * the whole site.
+ */
+
+const site = defineCollection({
+  loader: file('src/content/settings/site.json', { parser: (text) => ({ site: JSON.parse(text) }) }),
   schema: z.object({
     brandName: z.string(),
     brandInitials: z.string(),
     metaTitle: z.string(),
     metaDescription: z.string(),
-    hero: z.object({
-      eyebrow: z.string(),
-      titleLine1: z.string(),
-      titleLine2: z.string(),
-      titleAccent: z.string(),
-      lede: z.string(),
-      ctaPrimary: z.string(),
-      ctaSecondary: z.string(),
-      image: z.string().optional(),
-      imageAlt: z.string().optional(),
-      caption: z.string().optional(),
-      captionRight: z.string().optional(),
-      stats: z.array(z.object({ value: z.string(), label: z.string() })),
-    }),
-    about: z.object({
-      eyebrow: z.string(),
-      title: z.string(),
-      body: z.string(),
-      cardTitle: z.string(),
-      cardRev: z.string(),
-      specs: z.array(z.object({ key: z.string(), value: z.string() })),
-    }),
-    skills: z.object({
-      eyebrow: z.string(),
-      title: z.string(),
-      intro: z.string(),
-      categories: z.array(
-        z.object({
-          title: z.string(),
-          subtitle: z.string(),
-          items: z.array(
-            z.object({
-              name: z.string(),
-              level: z.string(),
-              pct: z.number(),
-            }),
-          ),
-        }),
-      ),
-    }),
-    projectsSection: z.object({
-      eyebrow: z.string(),
-      title: z.string(),
-      intro: z.string(),
-    }),
-    contact: z.object({
-      eyebrow: z.string(),
-      title: z.string(),
-      lede: z.string(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-      cvUrl: z.string().optional(),
-    }),
+    footerLeft: z.string(),
+    footerRight: z.string(),
+  }),
+});
+
+const hero = defineCollection({
+  loader: file('src/content/settings/hero.json', { parser: (text) => ({ hero: JSON.parse(text) }) }),
+  schema: z.object({
+    eyebrow: z.string(),
+    titleLine1: z.string(),
+    titleLine2: z.string(),
+    titleAccent: z.string(),
+    lede: z.string(),
+    ctaPrimary: z.string(),
+    ctaSecondary: z.string(),
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
+    caption: z.string().optional(),
+    captionRight: z.string().optional(),
+    stats: z.array(z.object({ value: z.string(), label: z.string() })),
+  }),
+});
+
+const about = defineCollection({
+  loader: file('src/content/settings/about.json', { parser: (text) => ({ about: JSON.parse(text) }) }),
+  schema: z.object({
+    eyebrow: z.string(),
+    title: z.string(),
+    body: z.string(),
+    cardTitle: z.string(),
+    cardRev: z.string(),
+    specs: z.array(z.object({ key: z.string(), value: z.string() })),
+  }),
+});
+
+const skills = defineCollection({
+  loader: file('src/content/settings/skills.json', { parser: (text) => ({ skills: JSON.parse(text) }) }),
+  schema: z.object({
+    eyebrow: z.string(),
+    title: z.string(),
+    intro: z.string(),
+    categories: z.array(
+      z.object({
+        title: z.string(),
+        subtitle: z.string(),
+        items: z.array(
+          z.object({
+            name: z.string(),
+            level: z.string(),
+            pct: z.number(),
+          }),
+        ),
+      }),
+    ),
+  }),
+});
+
+const projectsSection = defineCollection({
+  loader: file('src/content/settings/projects-section.json', {
+    parser: (text) => ({ projectsSection: JSON.parse(text) }),
+  }),
+  schema: z.object({
+    eyebrow: z.string(),
+    title: z.string(),
+    intro: z.string(),
+  }),
+});
+
+const contact = defineCollection({
+  loader: file('src/content/settings/contact.json', { parser: (text) => ({ contact: JSON.parse(text) }) }),
+  schema: z.object({
+    eyebrow: z.string(),
+    title: z.string(),
+    lede: z.string(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+    cvUrl: z.string().optional(),
     socials: z.array(
       z.object({
         label: z.string(),
@@ -73,7 +101,6 @@ const settings = defineCollection({
         url: z.string().optional(),
       }),
     ),
-    footer: z.object({ left: z.string(), right: z.string() }),
   }),
 });
 
@@ -105,4 +132,4 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { settings, projects };
+export const collections = { site, hero, about, skills, projectsSection, contact, projects };

@@ -1,0 +1,19 @@
+{
+  "eyebrow": "Mechanical Design & Advanced Manufacturing",
+  "titleLine1": "Ra'ad",
+  "titleLine2": "Alshawab",
+  "titleAccent": "keh",
+  "lede": "Mechanical Engineering student building the design → analyze → manufacture → validate loop on real mechatronic systems — SolidWorks CAD, structural & CFD simulation, and hands-on laser-cut / FDM fabrication.",
+  "ctaPrimary": "View Projects →",
+  "ctaSecondary": "Download CV",
+  "image": "/images/uploads/1785781979008-mnj418.png",
+  "imageAlt": "",
+  "caption": "Fig. 01 — Velvet Vend, exploded assembly",
+  "captionRight": "SolidWorks",
+  "stats": [
+    { "value": "4", "label": "Engineering projects" },
+    { "value": "2.38", "label": "Min. FOS, wing structure" },
+    { "value": "25.6%", "label": "Turbine conversion eff." },
+    { "value": "117.7 JD", "label": "Vend prototype BOM" }
+  ]
+}

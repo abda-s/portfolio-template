@@ -16,123 +16,137 @@ logout_redirect_url: https://abda-s.github.io/portfolio-template/
 media_folder: public/images/uploads
 public_folder: /images/uploads
 
-collections:
-  - name: settings
-    label: Site Settings
-    files:
-      - name: settings
-        label: Site Settings
-        file: src/content/settings.json
-        format: json
+# Each page section is its own singleton: one focused screen per real-world
+# task ("update my phone number", "reorder skills") instead of one long form
+# covering the whole site. Singletons show as individual clicks in the
+# sidebar, grouped here to match the order sections appear on the page.
+singletons:
+  - name: site
+    label: Site Info
+    icon: language
+    file: src/content/settings/site.json
+    format: json
+    fields:
+      - { label: Brand Name, name: brandName, widget: string, hint: 'Shown in the top-left nav, e.g. "Ra''ad Alshawabkeh"' }
+      - { label: Brand Initials, name: brandInitials, widget: string, hint: 'Short nav logo text, e.g. "RA"' }
+      - { label: Browser Tab Title, name: metaTitle, widget: string, hint: 'Shown in the browser tab and search results' }
+      - { label: Search Result Description, name: metaDescription, widget: text, hint: 'The snippet shown under your site in Google search results' }
+      - { label: Footer Left Text, name: footerLeft, widget: string, hint: 'e.g. copyright line' }
+      - { label: Footer Right Text, name: footerRight, widget: string }
+
+  - divider: true
+
+  - name: hero
+    label: Hero (Homepage Intro)
+    icon: waving_hand
+    file: src/content/settings/hero.json
+    format: json
+    fields:
+      - { label: Eyebrow (small label above title), name: eyebrow, widget: string }
+      - { label: 'Title — line 1', name: titleLine1, widget: string }
+      - { label: 'Title — line 2', name: titleLine2, widget: string }
+      - { label: 'Title — accent (colored suffix on line 2)', name: titleAccent, widget: string }
+      - { label: Intro Paragraph, name: lede, widget: text }
+      - { label: Primary Button Text, name: ctaPrimary, widget: string, hint: 'Scrolls to the Projects section' }
+      - { label: Secondary Button Text, name: ctaSecondary, widget: string, hint: 'Opens your CV/resume, set in Contact & Socials' }
+      - { label: Hero Photo, name: image, widget: image, required: false }
+      - { label: Hero Photo Alt Text, name: imageAlt, widget: string, required: false, hint: 'Describe the photo for screen readers' }
+      - { label: 'Photo Caption (left)', name: caption, widget: string, required: false }
+      - { label: 'Photo Caption (right)', name: captionRight, widget: string, required: false }
+      - label: Stats Strip
+        name: stats
+        widget: list
+        summary: '{{value}} — {{label}}'
+        hint: 'The row of quick numbers under the intro paragraph, e.g. "4 · Engineering projects"'
         fields:
-          - { label: Brand Name, name: brandName, widget: string }
-          - { label: Brand Initials, name: brandInitials, widget: string }
-          - { label: Meta Title (browser tab / SEO), name: metaTitle, widget: string }
-          - { label: Meta Description (SEO), name: metaDescription, widget: text }
+          - { label: Value, name: value, widget: string, hint: 'e.g. "4" or "25.6%"' }
+          - { label: Label, name: label, widget: string }
 
-          - label: Hero Section
-            name: hero
-            widget: object
-            fields:
-              - { label: Eyebrow, name: eyebrow, widget: string }
-              - { label: 'Title — line 1', name: titleLine1, widget: string }
-              - { label: 'Title — line 2', name: titleLine2, widget: string }
-              - { label: 'Title — accent (colored suffix)', name: titleAccent, widget: string }
-              - { label: Lede paragraph, name: lede, widget: text }
-              - { label: Primary button label, name: ctaPrimary, widget: string }
-              - { label: Secondary button label, name: ctaSecondary, widget: string }
-              - { label: Hero Image, name: image, widget: image, required: false }
-              - { label: Hero Image Alt Text, name: imageAlt, widget: string, required: false }
-              - { label: 'Caption (left)', name: caption, widget: string, required: false }
-              - { label: 'Caption (right)', name: captionRight, widget: string, required: false }
-              - label: Stats Strip
-                name: stats
-                widget: list
-                summary: '{{value}} — {{label}}'
-                fields:
-                  - { label: Value, name: value, widget: string }
-                  - { label: Label, name: label, widget: string }
+  - name: about
+    label: About
+    icon: person
+    file: src/content/settings/about.json
+    format: json
+    fields:
+      - { label: Eyebrow, name: eyebrow, widget: string }
+      - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
+      - { label: Body, name: body, widget: text, hint: 'Raw HTML is supported, e.g. <p>, <b>, <strong>' }
+      - { label: Side Card Title, name: cardTitle, widget: string, hint: 'e.g. "Profile"' }
+      - { label: Side Card Tag, name: cardRev, widget: string, hint: 'e.g. "Rev. 2026"' }
+      - label: Side Card Rows
+        name: specs
+        widget: list
+        summary: '{{key}}: {{value}}'
+        hint: 'Key facts shown in the card next to your About text, e.g. "Location: Amman, Jordan"'
+        fields:
+          - { label: Key, name: key, widget: string }
+          - { label: Value, name: value, widget: string }
 
-          - label: About Section
-            name: about
-            widget: object
-            fields:
-              - { label: Eyebrow, name: eyebrow, widget: string }
-              - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
-              - { label: Body, name: body, widget: text, hint: 'Raw HTML is supported, e.g. <p>, <b>, <strong>' }
-              - { label: Side Card Title, name: cardTitle, widget: string }
-              - { label: Side Card Revision Tag, name: cardRev, widget: string }
-              - label: Spec Rows
-                name: specs
-                widget: list
-                summary: '{{key}}: {{value}}'
-                fields:
-                  - { label: Key, name: key, widget: string }
-                  - { label: Value, name: value, widget: string }
-
-          - label: Skills Section
-            name: skills
-            widget: object
-            fields:
-              - { label: Eyebrow, name: eyebrow, widget: string }
-              - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
-              - { label: Intro, name: intro, widget: text }
-              - label: Categories
-                name: categories
-                widget: list
-                summary: '{{title}}'
-                fields:
-                  - { label: Category Title, name: title, widget: string }
-                  - { label: Category Subtitle, name: subtitle, widget: string }
-                  - label: Skills
-                    name: items
-                    widget: list
-                    summary: '{{name}} ({{pct}}%)'
-                    fields:
-                      - { label: Name, name: name, widget: string }
-                      - label: Level
-                        name: level
-                        widget: select
-                        options: [Developing, Working, Proficient, Advanced]
-                      - { label: 'Percent (0-100)', name: pct, widget: number, min: 0, max: 100, value_type: int }
-
-          - label: Projects Section Intro
-            name: projectsSection
-            widget: object
-            fields:
-              - { label: Eyebrow, name: eyebrow, widget: string }
-              - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
-              - { label: Intro, name: intro, widget: text }
-
-          - label: Contact Section
-            name: contact
-            widget: object
-            fields:
-              - { label: Eyebrow, name: eyebrow, widget: string }
-              - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
-              - { label: Lede, name: lede, widget: text }
-              - { label: Email, name: email, widget: string, required: false }
-              - { label: Phone, name: phone, widget: string, required: false }
-              - { label: CV / Resume URL, name: cvUrl, widget: string, required: false }
-
-          - label: Social Links
-            name: socials
+  - name: skills
+    label: Skills
+    icon: bar_chart
+    file: src/content/settings/skills.json
+    format: json
+    fields:
+      - { label: Eyebrow, name: eyebrow, widget: string }
+      - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
+      - { label: Intro, name: intro, widget: text }
+      - label: Skill Categories
+        name: categories
+        widget: list
+        summary: '{{title}}'
+        hint: 'Each category becomes its own card, e.g. "CAD & Design"'
+        fields:
+          - { label: Category Title, name: title, widget: string }
+          - { label: Category Subtitle, name: subtitle, widget: string }
+          - label: Skills in this Category
+            name: items
             widget: list
-            summary: '{{label}}'
+            summary: '{{name}} ({{pct}}%)'
             fields:
-              - { label: Label, name: label, widget: string }
-              - { label: Display Text, name: value, widget: string }
-              - { label: URL, name: url, widget: string, required: false }
+              - { label: Skill Name, name: name, widget: string }
+              - label: Level Label
+                name: level
+                widget: select
+                options: [Developing, Working, Proficient, Advanced]
+              - { label: 'Skill Bar (0-100)', name: pct, widget: number, min: 0, max: 100, value_type: int }
 
-          - label: Footer
-            name: footer
-            widget: object
-            fields:
-              - { label: Left Text, name: left, widget: string }
-              - { label: Right Text, name: right, widget: string }
+  - name: projectsSection
+    label: Projects Intro
+    icon: work
+    file: src/content/settings/projects-section.json
+    format: json
+    fields:
+      - { label: Eyebrow, name: eyebrow, widget: string }
+      - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
+      - { label: Intro, name: intro, widget: text }
 
+  - name: contact
+    label: Contact & Socials
+    icon: mail
+    file: src/content/settings/contact.json
+    format: json
+    fields:
+      - { label: Eyebrow, name: eyebrow, widget: string }
+      - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
+      - { label: Intro, name: lede, widget: text }
+      - { label: Email, name: email, widget: string, required: false }
+      - { label: Phone, name: phone, widget: string, required: false }
+      - { label: CV / Resume URL, name: cvUrl, widget: string, required: false }
+      - label: Social / Contact Links
+        name: socials
+        widget: list
+        summary: '{{label}}'
+        hint: 'Shown as clickable rows in the Contact section, e.g. Email, LinkedIn, GitHub'
+        fields:
+          - { label: Label, name: label, widget: string, hint: 'e.g. "LinkedIn"' }
+          - { label: Display Text, name: value, widget: string, hint: 'Shown to visitors, e.g. "/in/your-name"' }
+          - { label: Link URL, name: url, widget: string, required: false }
+
+collections:
   - name: projects
     label: Projects
+    icon: construction
     folder: src/content/projects
     create: true
     delete: true

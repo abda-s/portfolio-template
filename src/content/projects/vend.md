@@ -3,6 +3,7 @@ sheet: '01'
 tag: Team Project · Mechatronics
 title: Velvet Vend
 subtitle: Cloud-connected smart vending prototype
+thumb: /images/uploads/1785780865247-ss01sv.png
 result: Designed and manufactured an IoT-connected vending mechanism; diagnosed and resolved a control-board thermal failure via architecture migration.
 published: true
 order: 1

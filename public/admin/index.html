@@ -7,21 +7,68 @@
   </head>
   <body>
     <script>
-      // Send signed-out visitors straight to the email/password login page
-      // instead of Sveltia's GitHub-branded splash screen. Two cases must NOT
-      // redirect: a returning session (Sveltia has a cached token and will
-      // sign in automatically), and a fresh arrival from the login page's
-      // magic-link redirect (`#/signin/...`), which Sveltia needs to consume
-      // itself to complete sign-in.
-      (() => {
-        const hasCachedSession = !!localStorage.getItem('sveltia-cms.user');
-        const isMagicLinkReturn = location.hash.startsWith('#/signin/');
+      // Send signed-out (or no-longer-actually-signed-in) visitors straight
+      // to the email/password login page instead of Sveltia's GitHub-branded
+      // splash screen. A fresh arrival from the login page's magic-link
+      // redirect (`#/signin/...`) is left alone either way, since Sveltia
+      // needs to consume that itself to complete sign-in.
+      //
+      // A cached session is only trusted after confirming its GitHub token
+      // still works. A stale/expired/revoked token left in localStorage
+      // (e.g. from an old sign-in flow, or a token that was later rotated)
+      // would otherwise make Sveltia silently fail its own auto-login and
+      // fall back to its GitHub-branded screen with no way back to this
+      // login page short of clearing storage by hand.
+      //
+      // Sveltia's own script is only loaded (below) after this check
+      // resolves, so it can never read a token we're about to clear.
+      (async () => {
+        const LOGIN_URL = 'https://portfolio-cms-auth.3bda-as.workers.dev/login';
 
-        if (!hasCachedSession && !isMagicLinkReturn) {
-          location.replace('https://portfolio-cms-auth.3bda-as.workers.dev/login');
+        const loadSveltia = () => {
+          const script = document.createElement('script');
+
+          script.src = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
+          script.type = 'module';
+          document.body.appendChild(script);
+        };
+
+        if (location.hash.startsWith('#/signin/')) {
+          loadSveltia();
+          return;
         }
+
+        let cachedUser;
+
+        try {
+          cachedUser = JSON.parse(localStorage.getItem('sveltia-cms.user') ?? 'null');
+        } catch {
+          cachedUser = null;
+        }
+
+        if (!cachedUser?.token) {
+          location.replace(LOGIN_URL);
+          return;
+        }
+
+        try {
+          const response = await fetch('https://api.github.com/user', {
+            headers: { Authorization: `Bearer ${cachedUser.token}` },
+          });
+
+          if (response.ok) {
+            loadSveltia(); // Token still valid; let Sveltia sign in automatically.
+            return;
+          }
+        } catch {
+          // Network error reaching GitHub: fall through and treat as invalid
+          // rather than get stuck, since Sveltia's own API calls would fail
+          // the same way regardless.
+        }
+
+        localStorage.removeItem('sveltia-cms.user');
+        location.replace(LOGIN_URL);
       })();
     </script>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
   </body>
 </html>

@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { withBase } from '../../lib/media';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => data.published);
@@ -24,8 +25,8 @@ const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
 <Layout title={`${p.title} — ${s.brandName}`} description={p.result}>
   <nav class="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
     <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-      <a href="/#projects" class="text-sm text-neutral-400 hover:text-white">← Back to projects</a>
-      <a href="/" class="text-sm font-semibold">{s.brandInitials}</a>
+      <a href={withBase('#projects')} class="text-sm text-neutral-400 hover:text-white">← Back to projects</a>
+      <a href={withBase('')} class="text-sm font-semibold">{s.brandInitials}</a>
     </div>
   </nav>
 
@@ -35,7 +36,7 @@ const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
     <p class="mt-2 text-lg text-neutral-400">{p.subtitle}</p>
 
     {p.thumb && (
-      <img src={p.thumb} alt={p.title} class="mt-8 aspect-video w-full rounded-2xl border border-white/10 object-cover" />
+      <img src={withBase(p.thumb)} alt={p.title} class="mt-8 aspect-video w-full rounded-2xl border border-white/10 object-cover" />
     )}
 
     {detailMetrics.length > 0 && (

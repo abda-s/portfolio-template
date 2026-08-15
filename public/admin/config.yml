@@ -2,10 +2,13 @@ backend:
   name: github
   repo: abda-s/portfolio-template
   branch: main
-  # Points at the sveltia-cms-auth Worker that handles the GitHub OAuth
-  # token exchange. See README.md for how to deploy it. One Worker + one
-  # GitHub OAuth App can be reused across every client repo.
-  base_url: https://sveltia-cms-auth.3bda-as.workers.dev
+  # Points at the portfolio-cms-auth Worker: a real email/password login
+  # (no GitHub account needed by the client) that looks the client up in
+  # D1 and hands Sveltia a GitHub token scoped to just this repo. See
+  # ../../../portfolio-cms-auth/README.md for how it works and how to add
+  # a client. One Worker + one D1 database is reused across every client
+  # repo; each client is a row keyed by email.
+  base_url: https://portfolio-cms-auth.3bda-as.workers.dev
 
 media_folder: public/images/uploads
 public_folder: /images/uploads

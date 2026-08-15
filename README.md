@@ -41,27 +41,26 @@ backend:
   name: github
   repo: YOUR_GITHUB_USERNAME/clientname.github.io
   branch: main
-  base_url: https://sveltia-cms-auth.YOUR_SUBDOMAIN.workers.dev
+  base_url: https://portfolio-cms-auth.YOUR_SUBDOMAIN.workers.dev
 ```
 
-### 3. Deploy the GitHub OAuth proxy (one-time, reused across all clients)
+### 3. Add the client to the shared auth Worker (one-time Worker setup, then per-client)
 
-Sveltia CMS is entirely client-side, so the GitHub OAuth token exchange
-needs a small server. [`sveltia/sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth)
-is the official one — a Cloudflare Worker, free tier, host-independent (it
-works no matter where the actual site is hosted).
+Clients log in with a plain email/password — no GitHub account needed. This
+is handled by a separate project, [`portfolio-cms-auth`](../portfolio-cms-auth/README.md),
+a Cloudflare Worker + D1 database that swaps Sveltia's GitHub-OAuth step for
+a real login form, then hands Sveltia a GitHub token scoped to just that
+client's repo behind the scenes.
 
-1. Deploy it once: click the deploy button in that repo, or clone it and
-   run `wrangler deploy`.
-2. Create **one** GitHub OAuth App (GitHub → Settings → Developer settings →
-   OAuth Apps → New OAuth App). Set the callback URL to
-   `https://sveltia-cms-auth.YOUR_SUBDOMAIN.workers.dev/callback`.
-3. Set the Worker's `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` env vars
-   (or `wrangler secret put`) to that OAuth App's credentials.
-4. Reuse this same Worker + OAuth App for every client repo — `base_url`
-   in every client's `config.yml` points at the same Worker URL. A client
-   only needs to be a **collaborator on their own repo** to authenticate;
-   the OAuth App itself is shared.
+1. Deploy the Worker once (see that project's README) — it's shared across
+   every client, same as the OAuth proxy would have been.
+2. For each new client: create a **fine-grained GitHub PAT** scoped to only
+   their repo (`Contents: Read and write`, nothing else), then run
+   `npm run add-client` in `portfolio-cms-auth/` and give it their email,
+   a password, their repo, and that token.
+3. `base_url` in every client's `config.yml` points at the same Worker —
+   it looks up which client is logging in by email and returns the right
+   repo's token.
 
 ### 4. Set the Astro `site` (and `base` if needed)
 
@@ -82,11 +81,11 @@ clients.
 Repo → Settings → Pages → Source: **GitHub Actions**. The included
 `.github/workflows/deploy.yml` builds and deploys on every push to `main`.
 
-### 6. Invite the client
+### 6. Give the client their login
 
-Repo → Settings → Collaborators → Add. They'll go to
-`https://yoursite.com/admin`, click "Sign in with GitHub", authorize once,
-and get the CMS UI — no git, no code, no terminal.
+No GitHub invite needed — just tell them the email and password you set up
+in step 3, and the URL: `https://yoursite.com/admin`. They enter both,
+click "Sign in", and get the CMS UI — no git, no code, no GitHub account.
 
 ## Moving a client to Cloudflare Pages later
 
@@ -94,7 +93,7 @@ No changes needed to content or the CMS — just connect the repo in the
 Cloudflare Pages dashboard (build command `npm run build`, output dir
 `dist`), point the domain there instead of GitHub Pages, and optionally
 drop the `.github/workflows/deploy.yml` step (Cloudflare builds on push
-itself). The `sveltia-cms-auth` Worker doesn't move; it already works
+itself). The `portfolio-cms-auth` Worker doesn't move; it already works
 independently of where the site is hosted.
 
 ## Local development
@@ -104,19 +103,22 @@ npm install
 npm run dev        # site at localhost:4321
 ```
 
-The CMS at `/admin` needs the real GitHub OAuth flow to save changes, so it
-won't do much locally without also running against a real repo/backend.
-Edit `src/content/settings.json` and `src/content/projects/*.md` directly
-while developing locally — those are the same files the CMS writes to.
+The CMS at `/admin` needs the real login flow to save changes, so it won't
+do much locally without also running against the deployed auth Worker and a
+real repo. Edit `src/content/settings.json` and `src/content/projects/*.md`
+directly while developing locally — those are the same files the CMS
+writes to.
 
-## Known limitation: login is GitHub-only
+## How client login actually works
 
-Sveltia CMS supports GitHub, GitLab, and Gitea as backends — there's no
-email/password identity layer. Clients need a (free) GitHub account and
-collaborator access to their repo. If a client ever needs a fully
-white-labeled login with no GitHub exposure, that requires switching that
-site to a different CMS (e.g. Pages CMS, Keystatic Cloud, Tina Cloud) — not
-a config change here.
+Sveltia CMS itself only supports GitHub/GitLab/Gitea as backends — no
+email/password identity layer built in. `portfolio-cms-auth` (a sibling
+project) works around that: it intercepts Sveltia's GitHub-login popup and
+shows a real login form instead, then, on a correct password, hands Sveltia
+a GitHub token scoped to just that client's repo. See
+[`../portfolio-cms-auth/README.md`](../portfolio-cms-auth/README.md) for
+how it works and its security notes (read those before onboarding a real
+client — token scoping matters here).
 
 ## Commands
 

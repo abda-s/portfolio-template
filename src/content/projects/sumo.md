@@ -3,6 +3,7 @@ sheet: '03'
 tag: Structural Design · Competition
 title: Push Me Maybe
 subtitle: Structurally optimized sumo robot chassis
+thumb: /images/uploads/1785790924711-w9jjqq.png
 result: Designed a low-mass, high-strength chassis for competition impact loading — validated across two static FEA load cases.
 published: true
 order: 3
@@ -31,7 +32,7 @@ metrics:
 sections:
   - number: '01'
     heading: Overview
-    body: '<p><strong>SUMO2025</strong> competition entry — team of three (Hatem Al-Muweadea, Ra''ad Alshawabkeh, Yanal Mehar). Role: chassis structural design and FEA validation. <strong>Tools:</strong> SolidWorks, SolidWorks Static FEA, laser cutting.</p>'
+    body: "<p><strong>SUMO2025</strong> competition entry — team of three (Hatem Al-Muweadea, Ra'ad Alshawabkeh, Yanal Mehar). Role: chassis structural design and FEA validation. <strong>Tools:</strong> SolidWorks, SolidWorks Static FEA, laser cutting.</p>"
   - number: '02'
     heading: Engineering Problem
     body: <p>Sumo competition rules reward maximum pushing force within a fixed mass and size limit — the chassis must be simultaneously light and structurally survive repeated impact loading against an opposing robot.</p>

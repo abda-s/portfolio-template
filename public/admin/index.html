@@ -6,34 +6,22 @@
     <title>Content Manager</title>
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
     <script>
-      // Skip Sveltia's branded "Sign In with GitHub" splash screen and go
-      // straight to our email/password login form (the button opens the
-      // popup that portfolio-cms-auth serves that form in). Sveltia renders
-      // this button client-side, so poll briefly until it exists.
+      // Send signed-out visitors straight to the email/password login page
+      // instead of Sveltia's GitHub-branded splash screen. Two cases must NOT
+      // redirect: a returning session (Sveltia has a cached token and will
+      // sign in automatically), and a fresh arrival from the login page's
+      // magic-link redirect (`#/signin/...`), which Sveltia needs to consume
+      // itself to complete sign-in.
       (() => {
-        const AUTO_CLICK_TIMEOUT_MS = 5000;
-        const POLL_INTERVAL_MS = 100;
-        const startedAt = Date.now();
+        const hasCachedSession = !!localStorage.getItem('sveltia-cms.user');
+        const isMagicLinkReturn = location.hash.startsWith('#/signin/');
 
-        const clickSignInButton = () => {
-          const button = [...document.querySelectorAll('button')].find((el) =>
-            el.textContent?.trim().startsWith('Sign In with'),
-          );
-
-          if (button) {
-            button.click();
-            return;
-          }
-
-          if (Date.now() - startedAt < AUTO_CLICK_TIMEOUT_MS) {
-            setTimeout(clickSignInButton, POLL_INTERVAL_MS);
-          }
-        };
-
-        clickSignInButton();
+        if (!hasCachedSession && !isMagicLinkReturn) {
+          location.replace('https://portfolio-cms-auth.3bda-as.workers.dev/login');
+        }
       })();
     </script>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
   </body>
 </html>

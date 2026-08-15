@@ -2,13 +2,12 @@ backend:
   name: github
   repo: abda-s/portfolio-template
   branch: main
-  # Points at the portfolio-cms-auth Worker: a real email/password login
-  # (no GitHub account needed by the client) that looks the client up in
-  # D1 and hands Sveltia a GitHub token scoped to just this repo. See
-  # ../../../portfolio-cms-auth/README.md for how it works and how to add
-  # a client. One Worker + one D1 database is reused across every client
-  # repo; each client is a row keyed by email.
-  base_url: https://portfolio-cms-auth.3bda-as.workers.dev
+  # Login itself is handled by index.html, which redirects signed-out
+  # visitors to the portfolio-cms-auth Worker's login page (real
+  # email/password, no GitHub account needed by the client) and back via
+  # Sveltia's built-in magic-link sign-in URL. See
+  # ../../../portfolio-cms-auth/README.md. base_url is intentionally not
+  # set here — Sveltia's own GitHub-OAuth screen is never shown.
 
 media_folder: public/images/uploads
 public_folder: /images/uploads

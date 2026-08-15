@@ -41,26 +41,29 @@ backend:
   name: github
   repo: YOUR_GITHUB_USERNAME/clientname.github.io
   branch: main
-  base_url: https://portfolio-cms-auth.YOUR_SUBDOMAIN.workers.dev
 ```
+
+(No `base_url` here — login doesn't go through Sveltia's GitHub-OAuth
+screen at all; see below.)
 
 ### 3. Add the client to the shared auth Worker (one-time Worker setup, then per-client)
 
 Clients log in with a plain email/password — no GitHub account needed. This
 is handled by a separate project, [`portfolio-cms-auth`](../portfolio-cms-auth/README.md),
-a Cloudflare Worker + D1 database that swaps Sveltia's GitHub-OAuth step for
-a real login form, then hands Sveltia a GitHub token scoped to just that
-client's repo behind the scenes.
+a Cloudflare Worker + D1 database that serves a real login page and, on
+success, signs the client straight into their CMS using Sveltia's built-in
+magic-link URL — the same mechanism Sveltia uses for its own QR-code mobile
+sign-in. Sveltia's GitHub-branded splash screen is never shown.
 
 1. Deploy the Worker once (see that project's README) — it's shared across
-   every client, same as the OAuth proxy would have been.
+   every client.
 2. For each new client: create a **fine-grained GitHub PAT** scoped to only
    their repo (`Contents: Read and write`, nothing else), then run
-   `npm run add-client` in `portfolio-cms-auth/` and give it their email,
-   a password, their repo, and that token.
-3. `base_url` in every client's `config.yml` points at the same Worker —
-   it looks up which client is logging in by email and returns the right
-   repo's token.
+   `npm run add-client` in `portfolio-cms-auth/` and give it their email, a
+   password, their repo, their site's URL, and that token.
+3. `public/admin/index.html` in this template already points signed-out
+   visitors at that same Worker's `/login` page — no per-client edit needed
+   there.
 
 ### 4. Set the Astro `site` (and `base` if needed)
 
@@ -84,8 +87,10 @@ Repo → Settings → Pages → Source: **GitHub Actions**. The included
 ### 6. Give the client their login
 
 No GitHub invite needed — just tell them the email and password you set up
-in step 3, and the URL: `https://yoursite.com/admin`. They enter both,
-click "Sign in", and get the CMS UI — no git, no code, no GitHub account.
+in step 3, and the URL: `https://yoursite.com/admin`. They'll be sent
+straight to a plain login page, enter both, and land in the CMS UI signed
+in — no git, no code, no GitHub account, no GitHub branding anywhere in
+the flow.
 
 ## Moving a client to Cloudflare Pages later
 
@@ -113,12 +118,15 @@ writes to.
 
 Sveltia CMS itself only supports GitHub/GitLab/Gitea as backends — no
 email/password identity layer built in. `portfolio-cms-auth` (a sibling
-project) works around that: it intercepts Sveltia's GitHub-login popup and
-shows a real login form instead, then, on a correct password, hands Sveltia
-a GitHub token scoped to just that client's repo. See
+project) works around that: `public/admin/index.html` sends signed-out
+visitors to that Worker's login page before Sveltia's UI ever renders, and
+on a correct password it redirects them back to
+`{site}/admin/#/signin/<token>` — a magic-link URL Sveltia natively
+consumes to sign in silently, with a GitHub token scoped to just that
+client's repo. Sveltia's GitHub-branded screen is never reached. See
 [`../portfolio-cms-auth/README.md`](../portfolio-cms-auth/README.md) for
-how it works and its security notes (read those before onboarding a real
-client — token scoping matters here).
+the full mechanism and its security notes (read those before onboarding a
+real client — token scoping matters here).
 
 ## Commands
 

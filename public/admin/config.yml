@@ -16,6 +16,21 @@ logout_redirect_url: https://abda-s.github.io/portfolio-template/
 media_folder: public/images/uploads
 public_folder: /images/uploads
 
+# Every image uploaded through the CMS is converted to WebP and capped at
+# 2048px on its longest side, right in the browser before it's committed —
+# no build step, no external service, no cost. Uncommitted/existing images
+# in the repo aren't touched retroactively; this only applies going forward.
+media_libraries:
+  all:
+    transformations:
+      raster_image:
+        format: webp
+        quality: 85
+        width: 2048
+        height: 2048
+      svg:
+        optimize: true
+
 # Each page section is its own singleton: one focused screen per real-world
 # task ("update my phone number", "reorder skills") instead of one long form
 # covering the whole site. Singletons show as individual clicks in the

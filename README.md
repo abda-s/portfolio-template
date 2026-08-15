@@ -48,6 +48,12 @@ to find it:
   in the two pages above; the content model underneath doesn't need to
   change.
 
+Every image uploaded through the CMS (hero photo, project thumbnails) is
+automatically converted to WebP, capped at 2048px, and stripped of EXIF
+metadata — right in the browser at upload time, before it's committed. See
+`media_libraries` in `public/admin/config.yml`. This only applies to new
+uploads; it doesn't retroactively touch images already in the repo.
+
 Adding a whole new page section later (say, a Testimonials block) means:
 add one JSON file under `src/content/settings/`, one singleton block in
 `config.yml`, one schema entry in `content.config.ts`, and the markup in

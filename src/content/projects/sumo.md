@@ -3,7 +3,7 @@ sheet: '03'
 tag: Structural Design · Competition
 title: Push Me Maybe
 subtitle: Structurally optimized sumo robot chassis
-thumb: ''
+thumb: /images/uploads/1785790924711-w9jjqq.webp
 result: Designed a low-mass, high-strength chassis for competition impact loading — validated across two static FEA load cases.
 published: true
 order: 3

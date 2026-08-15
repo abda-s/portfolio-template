@@ -70,7 +70,7 @@ singletons:
     fields:
       - { label: Eyebrow, name: eyebrow, widget: string }
       - { label: Title, name: title, widget: text, hint: 'Start a new line for a line break' }
-      - { label: Body, name: body, widget: text, hint: 'Raw HTML is supported, e.g. <p>, <b>, <strong>' }
+      - { label: Body, name: body, widget: markdown, minimal: true, buttons: [bold, italic], hint: 'Use the toolbar for bold/italic — start a new paragraph with a blank line' }
       - { label: Side Card Title, name: cardTitle, widget: string, hint: 'e.g. "Profile"' }
       - { label: Side Card Tag, name: cardRev, widget: string, hint: 'e.g. "Rev. 2026"' }
       - label: Side Card Rows
@@ -178,12 +178,39 @@ collections:
         name: sections
         widget: list
         summary: '{{number}} — {{heading}}'
+        hint: 'Each write-up is a numbered list of sections. Fill in whichever of Text / Table / Highlighted Note a section needs — leave the rest blank.'
         fields:
           - { label: Number, name: number, widget: string, hint: "e.g. '01'" }
           - { label: Heading, name: heading, widget: string }
           - {
-              label: Body,
+              label: Text,
               name: body,
-              widget: text,
-              hint: 'Raw HTML is supported: <p>, <ul>, <table>, <strong>, etc.',
+              widget: markdown,
+              required: false,
+              minimal: true,
+              buttons: [bold, italic, bulleted-list, numbered-list],
+              hint: 'Use the toolbar for bold/italic/lists — start a new paragraph with a blank line',
             }
+          - label: Table
+            name: table
+            widget: object
+            required: false
+            hint: 'A simple two-column data table, e.g. a "Results Summary"'
+            fields:
+              - { label: 'Left Column Header', name: columnOneHeader, widget: string, hint: 'e.g. "Metric"' }
+              - { label: 'Right Column Header', name: columnTwoHeader, widget: string, hint: 'e.g. "Result"' }
+              - label: Rows
+                name: rows
+                widget: list
+                summary: '{{label}}: {{value}}'
+                fields:
+                  - { label: Row Label, name: label, widget: string }
+                  - { label: Row Value, name: value, widget: string, hint: 'You can use **bold** here' }
+          - label: Highlighted Note
+            name: callout
+            widget: object
+            required: false
+            hint: 'An optional highlighted callout box, e.g. a framing note or a warning'
+            fields:
+              - { label: Note Title, name: title, widget: string, hint: 'e.g. "Framing note"' }
+              - { label: Note Text, name: text, widget: text }

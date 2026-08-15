@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { withBase } from '../../lib/media';
+import { renderMarkdown, renderMarkdownInline } from '../../lib/markdown';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => data.published);
@@ -77,10 +78,30 @@ const detailMetrics = p.metrics.filter((m) => m.placement === 'detail');
             <div class="pd-section">
               <div class="pd-num">
                 <span class="n">{section.number}</span>
-                <h4 set:html={section.heading} />
+                <h4>{section.heading}</h4>
               </div>
               <div class="pd-content">
-                <div set:html={section.body} />
+                {section.body && <div set:html={renderMarkdown(section.body)} />}
+                {section.table && (
+                  <table class="datatable">
+                    <tr>
+                      <th>{section.table.columnOneHeader}</th>
+                      <th>{section.table.columnTwoHeader}</th>
+                    </tr>
+                    {section.table.rows.map((row) => (
+                      <tr>
+                        <td>{row.label}</td>
+                        <td set:html={renderMarkdownInline(row.value)} />
+                      </tr>
+                    ))}
+                  </table>
+                )}
+                {section.callout && (
+                  <div class="callout-box">
+                    <b>{section.callout.title}</b>
+                    {section.callout.text}
+                  </div>
+                )}
               </div>
             </div>
           ))}

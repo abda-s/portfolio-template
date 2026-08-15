@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { withBase } from '../lib/media';
+import { renderMarkdown } from '../lib/markdown';
 
 const site = (await getEntry('site', 'site'))!.data;
 const hero = (await getEntry('hero', 'hero'))!.data;
@@ -95,7 +96,7 @@ const splitLines = (text: string) => text.split('\n');
             </h2>
           </div>
           <div class="about-grid">
-            <div class="reveal" set:html={about.body} />
+            <div class="reveal" set:html={renderMarkdown(about.body)} />
             <div class="spec-card reveal">
               <div class="head">
                 <span>{about.cardTitle}</span>

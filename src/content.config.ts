@@ -45,6 +45,8 @@ const about = defineCollection({
   schema: z.object({
     eyebrow: z.string(),
     title: z.string(),
+    // Markdown, rendered to HTML in the page (see src/lib/markdown.ts) —
+    // written with Sveltia's WYSIWYG editor, no HTML typed by hand.
     body: z.string(),
     cardTitle: z.string(),
     cardRev: z.string(),
@@ -126,7 +128,23 @@ const projects = defineCollection({
       z.object({
         number: z.string(),
         heading: z.string(),
-        body: z.string(),
+        // Markdown, rendered to HTML in the page (see src/lib/markdown.ts) —
+        // written with Sveltia's WYSIWYG editor, no HTML typed by hand.
+        // Sveltia writes `null` (not just omitting the key) for an unused
+        // optional field, hence `.nullish()` rather than `.optional()`.
+        body: z.string().nullish(),
+        // A simple data table (e.g. "Results Summary"), built from rows
+        // instead of typed HTML — Sveltia's editor has no table button yet.
+        table: z
+          .object({
+            columnOneHeader: z.string(),
+            columnTwoHeader: z.string(),
+            rows: z.array(z.object({ label: z.string(), value: z.string() })),
+          })
+          .nullish(),
+        // A highlighted note box, built from a title + text instead of
+        // hand-typed <div class="callout-box"> markup.
+        callout: z.object({ title: z.string(), text: z.string() }).nullish(),
       }),
     ),
   }),

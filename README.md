@@ -24,7 +24,16 @@ to find it:
 - `src/content/settings/projects-section.json` — the heading/intro above the project grid.
 - `src/content/settings/contact.json` — contact info and social/link rows.
 - `src/content/projects/*.md` — one file per project, in its own "Projects"
-  collection (create/delete supported, unlike the singletons above).
+  collection (create/delete supported, unlike the singletons above). Each
+  project is a numbered list of write-up sections; each section has three
+  optional parts an editor fills in with no HTML or Markdown syntax
+  knowledge needed: **Text** (a real WYSIWYG editor — bold/italic/lists via
+  toolbar buttons), **Table** (add rows with a label + value, e.g. a
+  "Results Summary"), and **Highlighted Note** (a title + text callout
+  box). Leave whichever parts a section doesn't need blank.
+- `src/lib/markdown.ts` — renders the About text and project Text fields
+  (stored as Markdown, written via the CMS's WYSIWYG editor) to HTML at
+  build time.
 - `src/content.config.ts` — the schema both the Astro pages and the CMS
   fields are validated against. If you add a field to a singleton in
   `public/admin/config.yml`, add the matching field to that singleton's

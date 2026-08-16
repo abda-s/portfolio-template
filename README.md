@@ -54,6 +54,15 @@ metadata — right in the browser at upload time, before it's committed. See
 `media_libraries` in `public/admin/config.yml`. This only applies to new
 uploads; it doesn't retroactively touch images already in the repo.
 
+The CMS itself is rebranded via `app_title` and `logo` in
+`public/admin/config.yml` — the client sees our name/mark in the header,
+login page, and browser tab, not "Sveltia CMS". This is config, not a fork:
+Sveltia isn't a white-label product, so one small "Powered by Sveltia CMS"
+credit remains in the UI footer regardless. Removing that fully would mean
+forking and self-hosting the CMS bundle, which trades one footer line for
+manually porting every future Sveltia update/security fix ourselves —
+not worth it for a single credit line.
+
 Adding a whole new page section later (say, a Testimonials block) means:
 add one JSON file under `src/content/settings/`, one singleton block in
 `config.yml`, one schema entry in `content.config.ts`, and the markup in
@@ -85,6 +94,12 @@ backend:
 
 (No `base_url` here — login doesn't go through Sveltia's GitHub-OAuth
 screen at all; see below.)
+
+Also update the two other absolute URLs further down in the same file to
+match the new site's real domain (and `base`, if it has one, per step 4):
+`logout_redirect_url` and `logo.src`. Both need the full URL — a relative
+path won't resolve correctly once the CMS is served under a different
+domain/base than this template's.
 
 ### 3. Add the client to the shared auth Worker (one-time Worker setup, then per-client)
 

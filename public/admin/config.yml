@@ -13,6 +13,17 @@ backend:
 # they click "Sign out" in the CMS.
 logout_redirect_url: https://abda-s.github.io/portfolio-template/
 
+# Replaces the "Sveltia CMS" name/logo in the header, login page, and browser
+# tab with our own — the client never sees the underlying CMS's name. (A
+# small "Powered by Sveltia CMS" credit stays in the UI footer; Sveltia
+# isn't a white-label product, so that one line can't be configured away.)
+# UPDATE THE LOGO URL PER CLIENT — it must be an absolute URL, same as
+# logout_redirect_url above.
+app_title: Portfolio Dashboard
+logo:
+  src: https://abda-s.github.io/portfolio-template/favicon.svg
+  show_in_header: true
+
 media_folder: public/images/uploads
 public_folder: /images/uploads
 

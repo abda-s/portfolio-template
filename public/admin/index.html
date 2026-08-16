@@ -9,16 +9,20 @@
          in the top-right corner. The client only ever sees this via the
          portfolio-cms-auth login flow — they never had a GitHub account —
          so showing "Signed In as <our-github-username>" would be
-         confusing/wrong branding, not theirs to see. Everything else in
-         that menu (Live Site, Settings, Keyboard Shortcuts, Sign In with
-         Mobile, Sign Out) is left alone.
+         confusing/wrong branding, not theirs to see. Also hides "Live
+         Site" — clients open the live site from their own browser, not
+         from inside the CMS. Settings, Keyboard Shortcuts, Sign In with
+         Mobile, and Sign Out are left alone.
 
          Selectors are pinned to Sveltia's real markup (verified against
          its source: account-button.svelte and account-menu.svelte) rather
          than guessed — img.avatar/button.avatar in the toolbar's last
-         button group, and the first item + divider inside the menu
-         labeled aria-label="Account". If a future Sveltia update renames
-         these, this silently stops applying instead of breaking anything. */
+         button group, and specific items inside the menu labeled
+         aria-label="Account", selected by their fixed position relative
+         to each other rather than a generated id (Sveltia re-randomizes
+         those on every menu open, so they can't be pinned directly). If a
+         future Sveltia update reorders or renames these, this silently
+         stops applying instead of breaking anything. */
       .sui.toolbar .buttons:last-child img.avatar {
         display: none;
       }
@@ -34,7 +38,11 @@
       }
 
       [role='menu'][aria-label='Account'] > .sui.menuitem:first-child,
-      [role='menu'][aria-label='Account'] > .sui.menuitem:first-child + .sui.divider {
+      [role='menu'][aria-label='Account'] > .sui.menuitem:first-child + .sui.divider,
+      [role='menu'][aria-label='Account']
+        > .sui.menuitem:first-child
+        + .sui.divider
+        + .sui.menuitem {
         display: none;
       }
     </style>

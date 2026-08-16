@@ -9,20 +9,18 @@
          in the top-right corner. The client only ever sees this via the
          portfolio-cms-auth login flow — they never had a GitHub account —
          so showing "Signed In as <our-github-username>" would be
-         confusing/wrong branding, not theirs to see. Also hides "Live
-         Site" — clients open the live site from their own browser, not
-         from inside the CMS. Settings, Keyboard Shortcuts, Sign In with
-         Mobile, and Sign Out are left alone.
+         confusing/wrong branding, not theirs to see. Everything else in
+         that menu (Settings, Keyboard Shortcuts, Sign In with Mobile,
+         Sign Out) is left alone. The "Live Site" item is also hidden —
+         clients open the live site from their own browser, not from
+         inside the CMS — but that one's handled in the script below, not
+         here; see the comment there for why.
 
-         Selectors are pinned to Sveltia's real markup (verified against
-         its source: account-button.svelte and account-menu.svelte) rather
-         than guessed — img.avatar/button.avatar in the toolbar's last
-         button group, and specific items inside the menu labeled
-         aria-label="Account", selected by their fixed position relative
-         to each other rather than a generated id (Sveltia re-randomizes
-         those on every menu open, so they can't be pinned directly). If a
-         future Sveltia update reorders or renames these, this silently
-         stops applying instead of breaking anything. */
+         The avatar rule is pinned to Sveltia's real markup (verified
+         against its source: account-button.svelte) — img.avatar/
+         button.avatar in the toolbar's last button group. If a future
+         Sveltia update renames these, this silently stops applying
+         instead of breaking anything. */
       .sui.toolbar .buttons:last-child img.avatar {
         display: none;
       }
@@ -36,18 +34,59 @@
         line-height: 1;
         font-feature-settings: 'liga';
       }
-
-      [role='menu'][aria-label='Account'] > .sui.menuitem:first-child,
-      [role='menu'][aria-label='Account'] > .sui.menuitem:first-child + .sui.divider,
-      [role='menu'][aria-label='Account']
-        > .sui.menuitem:first-child
-        + .sui.divider
-        + .sui.menuitem {
-        display: none;
-      }
     </style>
   </head>
   <body>
+    <script>
+      // Hides the "Signed In as <github-username>" row and the "Live Site"
+      // row from the account dropdown (top-right corner). Not CSS, because
+      // Sveltia's own Menu component has a real bug: it sets
+      // aria-label="Account" on the dropdown's wrapper, but that attribute
+      // gets silently clobbered by a later, conflicting attribute binding
+      // in the same component (verified against its source), so the
+      // rendered element never actually carries that label. On top of
+      // that, the dropdown's content is portaled into a shared container
+      // elsewhere in the DOM, not nested under the toolbar button — so
+      // there's no stable structural CSS selector that reaches only this
+      // one menu without also matching the first item of every other
+      // dropdown in the CMS (locale pickers, the "+" create menu, etc).
+      //
+      // This keys off the fixed English strings Sveltia renders for these
+      // two items instead — reliable as long as the CMS UI stays in
+      // English, which it always is here (nothing in this setup lets a
+      // client switch it). A MutationObserver is required because the
+      // dropdown's contents are only mounted to the DOM while it's open,
+      // freshly, every time it's opened.
+      (() => {
+        const SIGNED_IN_AS_PREFIX = 'Signed In as';
+        const LIVE_SITE_LABEL = 'Live Site';
+
+        const hideAccountMenuExtras = () => {
+          document.querySelectorAll('[role="menuitem"]').forEach((item) => {
+            if (!item.textContent?.trim().startsWith(SIGNED_IN_AS_PREFIX)) return;
+
+            const signedInRow = item.closest('.sui.menuitem') ?? item;
+            const divider = signedInRow.nextElementSibling;
+            const liveSiteRow = divider?.nextElementSibling;
+
+            signedInRow.style.display = 'none';
+
+            if (divider?.classList.contains('divider')) {
+              divider.style.display = 'none';
+            }
+
+            if (liveSiteRow?.textContent?.trim() === LIVE_SITE_LABEL) {
+              liveSiteRow.style.display = 'none';
+            }
+          });
+        };
+
+        new MutationObserver(hideAccountMenuExtras).observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+      })();
+    </script>
     <script>
       // Send signed-out (or no-longer-actually-signed-in) visitors straight
       // to the email/password login page instead of Sveltia's GitHub-branded

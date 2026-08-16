@@ -49,6 +49,7 @@ writeFileSync(astroConfigPath, astroConfig);
 
 let adminConfig = readFileSync(adminConfigPath, 'utf8');
 
+adminConfig = adminConfig.replace(/^(site_url:\s*).*$/m, `$1${fullUrl}/`);
 adminConfig = adminConfig.replace(/^(logout_redirect_url:\s*).*$/m, `$1${fullUrl}/`);
 adminConfig = adminConfig.replace(/^(\s*src:\s*).*$/m, `$1${fullUrl}/favicon.svg`);
 writeFileSync(adminConfigPath, adminConfig);

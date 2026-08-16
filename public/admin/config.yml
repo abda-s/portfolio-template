@@ -9,6 +9,12 @@ backend:
   # ../../../portfolio-cms-auth/README.md. base_url is intentionally not
   # set here — Sveltia's own GitHub-OAuth screen is never shown.
 
+# The site's real, deployed URL. Without this, Sveltia falls back to
+# window.location.origin — just the bare domain, no /portfolio-template
+# path — which is wrong for a project-page deploy like this one, and
+# breaks the "click the logo" / "open live site" links in the CMS.
+site_url: https://abda-s.github.io/portfolio-template/
+
 # Send visitors to the live site (not Sveltia's own sign-in screen) after
 # they click "Sign out" in the CMS.
 logout_redirect_url: https://abda-s.github.io/portfolio-template/

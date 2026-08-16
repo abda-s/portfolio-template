@@ -95,12 +95,6 @@ backend:
 (No `base_url` here — login doesn't go through Sveltia's GitHub-OAuth
 screen at all; see below.)
 
-Also update the two other absolute URLs further down in the same file to
-match the new site's real domain (and `base`, if it has one, per step 4):
-`logout_redirect_url` and `logo.src`. Both need the full URL — a relative
-path won't resolve correctly once the CMS is served under a different
-domain/base than this template's.
-
 ### 3. Add the client to the shared auth Worker (one-time Worker setup, then per-client)
 
 Clients log in with a plain email/password — no GitHub account needed. This
@@ -120,19 +114,29 @@ sign-in. Sveltia's GitHub-branded splash screen is never shown.
    visitors at that same Worker's `/login` page — no per-client edit needed
    there.
 
-### 4. Set the Astro `site` (and `base` if needed)
+### 4. Set the site's URL everywhere it's hardcoded
 
-In `astro.config.mjs`:
+This template has the deployed URL hardcoded in three places: Astro's
+`site`/`base` in `astro.config.mjs`, and `logout_redirect_url` + `logo.src`
+in `public/admin/config.yml` (both need the *full* URL — a relative path
+breaks once the CMS is served under a different domain/base than this
+template's). One command sets all three:
 
-```js
-site: 'https://YOUR_GITHUB_USERNAME.github.io', // or a custom domain
-// base: '/repo-name',  // ONLY for a project repo, e.g. username.github.io/repo-name
+```sh
+npm run set-site-url -- https://clientname.github.io
+# or, for a project repo instead of a root user page:
+npm run set-site-url -- https://YOUR_GITHUB_USERNAME.github.io/repo-name
 ```
 
-Skip `base` entirely if the repo is named `username.github.io` (root user
-page) or a custom domain is attached — that's the simpler path and avoids
-every internal link needing the `/repo-name` prefix. Prefer that for new
-clients.
+Prefer a root user page (`clientname.github.io`) or a custom domain over a
+project repo when you can — no `/repo-name` prefix needed on any internal
+link, simpler all around. Whenever a client's domain changes later
+(custom domain attached, moved off GitHub Pages, etc.), re-run this same
+command — it's meant to be run repeatedly, not just once at setup. It
+doesn't touch `backend.repo` in `config.yml` (which GitHub repo the CMS
+writes to — see step 2) or the client's row in `portfolio-cms-auth`'s
+database (see step 3) — update those separately if the repo or auth
+Worker setup also changed.
 
 ### 5. Enable GitHub Pages
 
@@ -191,3 +195,4 @@ real client — token scoping matters here).
 | `npm run dev`       | Start local dev server at `localhost:4321`  |
 | `npm run build`     | Build production site to `./dist/`          |
 | `npm run preview`   | Preview the build locally                   |
+| `npm run set-site-url -- <url>` | Update the deployed URL everywhere it's hardcoded (see step 4 above) |
